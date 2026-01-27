@@ -2,21 +2,29 @@
     "name": "@vlad-georgian/aoc-2025",
     "version": "1.0.0",
     "private": true,
-    "type": "module",
-    "packageManager": "bun@1.2.4",
     "bin": {
         "bun-test-vitest": "tests/vitest.js"
     },
+    "type": "module",
     "scripts": {
         "prestart": "bun install",
         "start": "bun ./index.ts",
+        "lint": "oxlint",
+        "lint:fix": "oxlint --fix",
+        "lint:github": "oxlint --format=github",
+        "format": "oxfmt",
+        "format:check": "oxfmt --check",
         "test": "vitest run",
-        "test:watch": "vitest",
-        "coverage": "vitest run --coverage"
+        "test:watch": "vitest"
+    },
+    "dependencies": {
+        "z3-solver": "^4.15.4"
     },
     "devDependencies": {
-        "@biomejs/biome": "^2.3.12",
         "@types/node": "^25.0.10",
+        "oxfmt": "^0.27.0",
+        "oxlint": "^1.42.0",
         "vitest": "^4.0.18"
-    }
+    },
+    "packageManager": "bun@1.2.4"
 }

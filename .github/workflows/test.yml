@@ -1,0 +1,41 @@
+name: Test
+
+on:
+    pull_request:
+    push:
+        branches: [main]
+
+permissions: {}
+
+jobs:
+    oxlint-bun:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v6
+
+            - name: Setup Bun
+              uses: oven-sh/setup-bun@v2
+
+            - name: Install deps
+              run: bun install
+
+            - name: Lint
+              run: bun run lint:github
+              continue-on-error: true
+    # We run it under Node because the Z3 lib import used in solving day 10 is finicky under Bun due to some WASM support issues
+    oxlint-node:
+        runs-on: ubuntu-latest
+        needs: oxlint-bun
+        if: needs.oxlint-bun.result != 'success'
+        steps:
+            - uses: actions/checkout@v6
+
+            - name: Setup Node
+              uses: oven-sh/setup-bun@v2
+
+            - name: Install deps
+              run: bun install
+
+            - name: Test
+              run: bun run test
+              continue-on-error: true
