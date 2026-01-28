@@ -24,6 +24,7 @@ async function solve(inputFileName: string) {
         performance.mark('solution');
 
         console.log('file', `./day-${index + 1}/${inputFileName}.txt`);
+
         const dataRaw = await fs.readFile(`./day-${index + 1}/${inputFileName}.txt`);
         const data = dataRaw.toString();
         const solutions = solution.solve(data);
@@ -54,6 +55,7 @@ const separator = Array.from({ length: 80 }).fill('-').join('');
 await solve('sample');
 console.log(`\r\n${separator}`);
 await solve('input');
+console.log(`\r\n${separator}`);
 
 const deltaAll = performance.measure('set', 'all');
 console.log(`\r\n${separator}`);
