@@ -6,6 +6,8 @@ Each day is resolved in a separate directory with its own set of tests and input
 
 No external or runtime specific imports are used. You can run this in your preferred JS runtime.
 
+> For day 6, it's important that you do NOT trim the lines in the input file, since those extra spaces are important
+
 ## Run all
 
 To run each solution for both the sample and provided input data, with metrics:

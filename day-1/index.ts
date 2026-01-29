@@ -1,7 +1,7 @@
 const dialMax = 100;
 const dialStart = 50;
 
-export function partOne(rotations: string[]): number {
+function partOne(rotations: string[]): number {
     if (!rotations?.length) {
         throw new Error('No rotations provided');
     }
@@ -34,7 +34,7 @@ export function partOne(rotations: string[]): number {
     return timesAtZero;
 }
 
-export function partTwo(rotations: string[]) {
+function partTwo(rotations: string[]) {
     if (!rotations?.length) {
         throw new Error('No rotations provided');
     }
@@ -67,13 +67,15 @@ export function partTwo(rotations: string[]) {
     return timesAtZero;
 }
 
-export function parse(input: string): string[] {
+function parse(input: string): string[] {
     return input.toString().trimEnd().split('\r\n');
 }
 
-export function* solve(input: string): Generator<[string, string, number]> {
+function* solve(input: string): Generator<(string | number)[]> {
     const lines = parse(input);
 
     yield ['Day 1: Secret entrance - Part 1', 'Times at zero', partOne(lines)];
     return ['Day 1: Secret entrance - Part 2', 'Times at zero', partTwo(lines)];
 }
+
+export { partOne, partTwo, parse, solve };

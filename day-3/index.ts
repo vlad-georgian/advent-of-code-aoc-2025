@@ -132,7 +132,7 @@ export function parse(input: string): string[] {
     return input.toString().trimEnd().split('\r\n');
 }
 
-export function* solve(input: string): Generator<[string, string, number]> {
+export function* solve(input: string): Generator<(string | number)[]> {
     const lines = parse(input);
 
     yield ['Day 3: Lobby - Part 1', 'Joltage sum', partOne(lines)];

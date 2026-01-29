@@ -108,8 +108,9 @@ export function parse(input: string): string[][] {
         .map((row) => row.split(''));
 }
 
-export function* solve(input: string): Generator<[string, string, number]> {
-    yield ['Day 4: Printing department - Part 1', 'Max accessible', partOne(parse(input))];
+export function* solve(input: string): Generator<(string | number)[]> {
+    const diagram = parse(input);
 
-    return ['Day 4: Printing department - Part 2', 'Max accessible', partTwo(parse(input))];
+    yield ['Day 4: Printing department - Part 1', 'Max accessible', partOne(diagram)];
+    return ['Day 4: Printing department - Part 2', 'Max accessible', partTwo(diagram)];
 }
