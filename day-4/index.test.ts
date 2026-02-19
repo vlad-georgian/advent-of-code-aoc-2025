@@ -1,50 +1,52 @@
-import * as fs from 'node:fs/promises';
-import { beforeEach, describe, expect, it, test } from 'vitest';
+import * as fs from 'node:fs/promises'
+import { beforeEach, describe, expect, it } from 'vitest'
 
-import * as dayFour from './index';
+import * as dayFourHarness from './index.ts'
+import { partOne } from './part-one.ts'
+import { partTwo } from './part-two.ts'
 
-const pathPrefix = './day-4';
+const pathPrefix = './datasets/day-4'
 
 describe('Day 4: Printing department - Sample dataset', async () => {
-    const dataRaw = await fs.readFile(`${pathPrefix}/sample.txt`);
-    const data = dataRaw.toString();
-    let diagram: string[][] = [];
+    const dataRaw = await fs.readFile(`datasets/${pathPrefix}/sample.txt`)
+    const data = dataRaw.toString()
+    let diagram: string[][] = []
 
     beforeEach(async () => {
-        diagram = dayFour.parse(data);
-    });
+        diagram = dayFourHarness.parse(data)
+    })
 
     it('should solve part 1', () => {
-        const result = dayFour.partOne(diagram);
+        const result = partOne(diagram)
 
-        expect(result).toEqual(13);
-    });
+        expect(result).toEqual(13)
+    })
 
     it('should solve part 2', () => {
-        const result = dayFour.partTwo(diagram);
+        const result = partTwo(diagram)
 
-        expect(result).toEqual(43);
-    });
-});
+        expect(result).toEqual(43)
+    })
+})
 
 describe('Day 4: Printing department - Input dataset', async () => {
-    const dataRaw = await fs.readFile(`${pathPrefix}/input.txt`);
-    const data = dataRaw.toString();
-    let diagram: string[][] = [];
+    const dataRaw = await fs.readFile(`datasets/${pathPrefix}/input.txt`)
+    const data = dataRaw.toString()
+    let diagram: string[][] = []
 
     beforeEach(async () => {
-        diagram = dayFour.parse(data);
-    });
+        diagram = dayFourHarness.parse(data)
+    })
 
     it('should solve part 1', () => {
-        const result = dayFour.partOne(diagram);
+        const result = partOne(diagram)
 
-        expect(result).toEqual(1533);
-    });
+        expect(result).toEqual(1533)
+    })
 
     it('should solve part 2', () => {
-        const result = dayFour.partTwo(diagram);
+        const result = partTwo(diagram)
 
-        expect(result).toEqual(9206);
-    });
-});
+        expect(result).toEqual(9206)
+    })
+})
