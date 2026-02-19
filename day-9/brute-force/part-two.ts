@@ -1,42 +1,5 @@
-type Direction = 'left' | 'right' | 'up' | 'down' | undefined
-type Inside = 'left' | 'right' | undefined
-type Tile = { col: number; row: number }
-type Rectangle = { cornerA: Tile; cornerB: Tile; area: number }
-type Edge = { start: Tile; end: Tile; direction: Direction; validSide: Inside }
-
-// Method: brute force O(n^2)
-function partOne(lines: string[]): number {
-    if (!lines) {
-        throw new Error('No tiles provided')
-    }
-
-    const tiles: Tile[] = []
-    let largestRectangleArea = 0
-
-    for (const line of lines) {
-        const coords = line.split(',').map(Number)
-
-        if (coords[0] === undefined || coords[1] === undefined) {
-            throw new Error(`Invalid coords: ${line}`)
-        }
-
-        const tileNew: Tile = { col: coords[0], row: coords[1] }
-
-        for (const tile of tiles) {
-            const area = (Math.abs(tile.row - tileNew.row) + 1) * (Math.abs(tile.col - tileNew.col) + 1)
-
-            if (area <= largestRectangleArea) {
-                continue
-            }
-
-            largestRectangleArea = area
-        }
-
-        tiles.push(tileNew)
-    }
-
-    return largestRectangleArea
-}
+import type { Direction, Rectangle, Tile } from '../shared.ts'
+import type { Edge } from './shared.ts'
 
 /*
  * Helper method for part 2 that builds polygon borders and assigns a valid "inside" side for each edge
@@ -152,7 +115,7 @@ function isRectangleOutside(rectangle: Rectangle, edges: Edge[]): boolean {
 /*
  * Method: IDK if this has a name, but basically brute force; O(n^2) with way to many loops though
  */
-function partTwo(lines: string[]): number {
+export function partTwo(lines: string[]): number {
     if (!lines) {
         throw new Error('No tiles provided')
     }
@@ -202,5 +165,3 @@ function partTwo(lines: string[]): number {
 
     return largestRectangle.area
 }
-
-export { partOne, partTwo }
