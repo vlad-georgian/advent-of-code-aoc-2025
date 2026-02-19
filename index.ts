@@ -1,46 +1,106 @@
 import * as fs from 'node:fs/promises'
 
-import * as dayOne from './day-1/index.js'
-import * as dayTwo from './day-2/index.js'
-import * as dayThree from './day-3/index.js'
-import * as dayFour from './day-4/index.js'
-import * as dayFive from './day-5/index.js'
-import * as daySix from './day-6/index.js'
-import * as daySeven from './day-7/index.js'
-import * as dayEight from './day-8/index.js'
-import * as dayNine from './day-9/index.js'
+import { solutions, type Dataset } from './dataset.ts'
 
-type Solution = {
-    solve: (data: string, dataset?: Dataset) => Generator<(string | number)[], (string | number)[]>
+type SolutionFilters = {
+    days?: number[]
+    optimal: boolean
 }
-type Dataset = 'sample' | 'input'
-const solutions: Solution[] = [dayOne, dayTwo, dayThree, dayFour, dayFive, daySix, daySeven, dayEight, dayNine]
+const optimalArgKeyword = 'optimal'
 
-// Check against sample data
-async function solve(dataset: Dataset) {
+async function initialize() {
+    const args = process.argv.splice(2)
+    const filterArgIndex = args.findIndex((arg) => arg === '--filter')
+
+    let requestedFilters: string[] = []
+
+    // If someone uses "--filter" with actual values, then store them
+    if (filterArgIndex !== -1 && filterArgIndex !== args.length - 1) {
+        requestedFilters = args[filterArgIndex + 1]!.split(',')
+    }
+
+    return await solveDatasets(requestedFilters)
+}
+
+async function solveDatasets(filters?: string[]) {
+    const separator = Array.from({ length: 80 }).fill('-').join('')
+    const filtersProcessed = processFilters(filters)
+
+    performance.mark('all')
+
+    console.info('==Sample dataset:==\r\n')
+    await solve('sample', filtersProcessed)
+    console.info(`\r\n${separator}`)
+
+    console.info('==Input dataset:==\r\n')
+    await solve('input', filtersProcessed)
+    console.info(`\r\n${separator}`)
+
+    const deltaAll = performance.measure('set', 'all')
+    console.info(`\r\nTime(total): ${deltaAll.duration.toFixed(2)}ms`)
+}
+
+function processFilters(filtersRaw?: string[]): SolutionFilters {
+    const filters: SolutionFilters = {
+        days: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        optimal: false,
+    }
+
+    if (!filtersRaw?.length) {
+        return filters
+    }
+
+    const optimalKeywordIndex = filtersRaw.indexOf(optimalArgKeyword)
+    let daysRaw = filtersRaw
+
+    // Filter: "optimal"
+    if (optimalKeywordIndex !== -1) {
+        filters.optimal = true
+    }
+
+    // Filter: days as numbers
+    daysRaw = filtersRaw.filter((_item, index) => index !== optimalKeywordIndex)
+    const daysProcessed = daysRaw.map(Number)
+
+    // If no days were specified in the filter, then the user wants to see all the days
+    if (daysProcessed.length) {
+        filters.days = daysProcessed
+    }
+
+    return filters
+}
+
+async function solve(dataset: Dataset, filters: SolutionFilters) {
     if (!dataset?.length) {
         throw new Error('No input file specified!')
     }
 
+    let solutionsActive = solutions[dataset]
+
+    if (filters.days?.length) {
+        solutionsActive = solutionsActive.filter(({ day }) => filters.days!.includes(day))
+    }
+
     performance.mark(dataset)
 
-    for (const [index, solution] of solutions.entries()) {
+    for (const solutionMetadata of solutionsActive) {
         performance.mark('solution')
 
-        const dataRaw = await fs.readFile(`./day-${index + 1}/${dataset}.txt`)
+        const dataRaw = await fs.readFile(`datasets/./day-${solutionMetadata.day}/${solutionMetadata.dataset || dataset}.txt`)
         const data = dataRaw.toString()
-        const solutions = solution.solve(data, dataset)
+        const solutions = solutionMetadata.solution.solve(data, filters.optimal, dataset)
 
         while (true) {
             performance.mark('solution-start')
 
-            const result = solutions.next()
-            const deltaSolution = performance.measure('solution', 'solution-start')
+            const resultRaw = solutions.next()
+            const result = resultRaw instanceof Promise ? await resultRaw : resultRaw
+            let deltaSolution = performance.measure('solution', 'solution-start')
 
             const [day, resultType, resultValue, ...rest] = result.value
             const restCombined = !rest?.length ? '' : (rest || []).join(' ') + ' '
 
-            console.log(`${day} -> ${resultType}: ${resultValue} ${restCombined}in ${deltaSolution.duration}ms`)
+            console.info(`${day} -> ${resultType}: ${resultValue} ${restCombined}in ${deltaSolution.duration.toFixed(2)}ms`)
 
             if (result.done) {
                 break
@@ -50,17 +110,7 @@ async function solve(dataset: Dataset) {
 
     const deltaSet = performance.measure('set', dataset)
 
-    console.log(`Time(with input processing): ${deltaSet.duration}ms`)
+    console.info(`Time(with input processing): ${deltaSet.duration.toFixed(2)}ms`)
 }
 
-performance.mark('all')
-
-const separator = Array.from({ length: 80 }).fill('-').join('')
-
-await solve('sample')
-console.log(`\r\n${separator}`)
-await solve('input')
-console.log(`\r\n${separator}`)
-
-const deltaAll = performance.measure('set', 'all')
-console.log(`\r\nTime(total): ${deltaAll.duration}ms`)
+await initialize()
