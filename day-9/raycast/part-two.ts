@@ -1,10 +1,9 @@
-type Direction = 'left' | 'right' | 'up' | 'down' | undefined
-type Tile = { col: number; row: number }
-type Rectangle = { cornerA: Tile; cornerB: Tile; area: number }
+import type { Tile, Rectangle, Direction } from '../shared.ts'
+
 type Edge = { start: Tile; end: Tile; direction: Direction }
 
 /*
- * Helper method for part 2 that build he polygon borders.
+ * Helper method for part 2 that builds the polygon borders.
  * This is a bit simpler than the brute force approach since we no longer have to calculate the "valid" side
  */
 function buildContainingPolygon(tiles: Tile[]): Edge[] {
@@ -34,9 +33,10 @@ function pointInPolygon(point: Tile, edges: Edge[]): boolean {
     for (const edge of edges) {
         if (!verticalEdges.includes(edge.direction)) continue
 
-        // Uses half-open interval on Y axis to avoid double counting
         const minRow = Math.min(edge.start.row, edge.end.row)
         const maxRow = Math.max(edge.start.row, edge.end.row)
+
+        // Uses half-open interval on Y axis to avoid double counting
         if (point.row >= minRow && point.row < maxRow && edge.start.col > point.col) {
             crossings++
         }
@@ -105,7 +105,7 @@ function isRectangleOutside(rectangle: Rectangle, edges: Edge[]): boolean {
 /*
  * Method: Geometric validation; O(n^2)
  */
-function partTwo(lines: string[]): number {
+export function partTwo(lines: string[]): number {
     if (!lines) {
         throw new Error('No tiles provided')
     }
@@ -155,5 +155,3 @@ function partTwo(lines: string[]): number {
 
     return largestRectangle.area
 }
-
-export { partTwo }
